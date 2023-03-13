@@ -1,0 +1,34 @@
+{
+  "name": "Composable Local Hybrid Dev Server",
+  "description": "This is a sample Node.js app that helps develop a hybrid composable build locally",
+  "repository": "https://github.com/SalesforceCommerceCloud/composable-hybrid-dev-server",
+  "keywords": ["node", "express", "heroku"],
+  "image": "heroku/nodejs",
+  "env": {
+    "PROXY_ORIGIN": {
+      "description": "The proxy endpoint",
+      "required": true,
+      "value": "https://your-app-name.herokuapp.com"
+    },
+    "PWA_ORIGIN": {
+      "description": "The PWA instance URL",
+      "required": true,
+      "value": "https://your-app-name.mobify-storefront.com"
+    },
+    "SFCC_ORIGIN": {
+      "description": "The SFCC instance URL",
+      "required": true,
+      "value": "https://abcd-001.dx.commercecloud.salesforce.com"
+    },
+    "PREPEND_LOCALE_TO_PATH": {
+      "description": "Should the routes include locale in the mapping (ex: /en_US/)",
+      "required": true,
+      "value": "true"
+    },
+    "PREPEND_SITEID_TO_PATH": {
+      "description": "Should the routes include Site ID in the mapping (ex: /RefArch/)",
+      "required": true,
+      "value": "true"
+    }
+  }
+}
