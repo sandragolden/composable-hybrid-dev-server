@@ -113,11 +113,16 @@ if (require.main === module) {
         // common for the proxy
         `http.host == "dev-customer.salesforce.com" and starts_with(http.request.uri.path, "/mobify")`
     ]
+    const TEST_RULES_3 = [
+        `http.cookies contains "supersecret"`
+    ]
+
     const TEST_HOST = "dev-customer.salesforce.com"
     const TEST_COOKIES = "blah=foo; blah2=bar"
 
     TEST_RULES.forEach(r => console.log(parseRuleExpression(r)))
     TEST_RULES_2.forEach(r => console.log(parseRuleExpression(r)))
+    TEST_RULES_3.forEach(r => console.log(parseRuleExpression(r)))
 
     assert.equal(TEST_RULES.every(exp => evaluateRule(exp, {
         host: TEST_HOST,
@@ -141,6 +146,13 @@ if (require.main === module) {
     })), true)
 
     assert.equal(TEST_RULES.every(exp => evaluateRule(exp, {
+        host: TEST_HOST,
+        cookies: TEST_COOKIES,
+        uri: "/on/path2/something?some=thing",
+        path: "/on/path2/something"
+    })), false)
+
+    assert.equal(TEST_RULES_3.every(exp => evaluateRule(exp, {
         host: TEST_HOST,
         cookies: TEST_COOKIES,
         uri: "/on/path2/something?some=thing",
