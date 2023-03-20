@@ -89,15 +89,20 @@ function evaluateRule(ruleExpression, {host, uri, path, cookies = ""} = {}) {
     const _expr = parseRuleExpression(ruleExpression)
 
     const args = ["http"].concat(Object.keys(TRANSFORMS)).concat(`return ${_expr}`)
-    const func = new Function(...args)
-    return !!func.apply(undefined, [{
-        host: host,
-        request: {
-            uri: uri,
-            _path: path
-        },
-        cookies: cookies
-    }].concat(Object.values(TRANSFORMS)))
+    try {
+        const func = new Function(...args)
+        return !!func.apply(undefined, [{
+            host: host,
+            request: {
+                uri: uri,
+                _path: path
+            },
+            cookies: cookies
+        }].concat(Object.values(TRANSFORMS)))
+    } catch (e) {
+        console.error("Error evaluating rule. Check compiled expression: ", _expr)
+        throw e
+    }
 }
 
 // TESTS
