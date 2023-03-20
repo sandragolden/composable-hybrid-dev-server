@@ -69,6 +69,38 @@ The following table describes each of the B2C Commerce specific .env file variab
 | PWA_ORIGIN                | The PWA instance URL (ex: `http://localhost:3000` or `https://your-app-name.mobify-storefront.com`) |
 | PREPEND_LOCALE_TO_PATH    | Should the routes include locale in the mapping (ex: `/en_US/`)                                     |
 | PREPEND_SITEID_TO_PATH    | Should the routes include Site ID in the mapping (ex: `/RefArch/`)                                  |
+| MRT_RULE_#                | Numbered rules that map to PWA using MRT rules (see below)                                          |
+
+#### (optional) MRT Rules
+
+If at least 1 `MRT_RULE_#` env variable is provided these will be used instead of the hardcoded routes in `routes.js` to
+determine which routes should be proxied to the PWA origin. Each `MRT_RULE_#` environment var should be in the form of
+the rule expression. See [createMrtRules](https://developer.salesforce.com/docs/commerce/commerce-api/references/cdn-api-process-apis?meta=createMrtRules)
+
+```
+# Direct requests for anything that doesn't look like a SFCC sandbox to pwa-kit
+MRT_RULE_1='(http.host eq "localhost" and not
+    http.request.uri.path matches "^/on/"
+    and not http.request.uri.path matches "^/s/")'
+
+# or Direct requests specifically meant for pwa-kit explicitly
+MRT_RULE_1='(http.host eq "localhost" and (
+    http.request.uri.path eq "/" or
+    http.request.uri.path matches "^/callback" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/login" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/reset-password" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/registration" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account/orders" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account/orders/(\w+)" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account/wishlist" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/product/(\w+)" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/search" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/category/(\w+)"))'
+```
+
+Note: `http.host` **is** matched so it's recommended to use `localhost` as the host or omit the check entirely for local development as this
+will match the proxy origin (localhost in dev, etc)
 
 ### Run the server
 You need to make sure you have the PWA local development server running on another terminal tab.

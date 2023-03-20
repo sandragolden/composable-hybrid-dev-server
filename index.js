@@ -10,7 +10,11 @@ const PORT = process.env.PORT || 8001
 const PROXY_ORIGIN = process.env.PROXY_ORIGIN;
 const SFCC_ORIGIN = process.env.SFCC_ORIGIN;
 const PWA_ORIGIN = process.env.PWA_ORIGIN;
+const MRT_RULES = Object.keys(process.env)
+    .filter((key) => key.startsWith('MRT_RULE_'))
+    .map((key) => process.env[key]);
 const PWA_ROUTES = require('./routes');
+const {evaluateRule} = require("./mrt-rule-matcher");
 
 const options = {
     target: SFCC_ORIGIN,
@@ -20,12 +24,27 @@ const options = {
     hostRewrite: true,
     cookieDomainRewrite: true,
     router: (req) => {
-        const match = PWA_ROUTES.some((route) => {
-            return matchPath(req.path, route);
-        });
+        if (MRT_RULES.length) {
+            let match = MRT_RULES.every((rule) => {
+                return evaluateRule(rule, {
+                    host: req.hostname,
+                    uri: req.url,
+                    path: req.path,
+                    cookies: req.headers.cookie || ''
+                });
+            });
 
-        if (match || req.path.startsWith('/mobify')) {
-            return PWA_ORIGIN;
+            if (match) {
+                return PWA_ORIGIN;
+            }
+        } else {
+            let match = PWA_ROUTES.some((route) => {
+                return matchPath(req.path, route);
+            });
+
+            if (match || req.path.startsWith('/mobify')) {
+                return PWA_ORIGIN;
+            }
         }
 
         return SFCC_ORIGIN;
@@ -58,4 +77,7 @@ app.use(createProxyMiddleware(options));
 
 app.listen(PORT, () => {
     console.log(`Proxy server listening: ${PROXY_ORIGIN}`);
+    if (MRT_RULES.length) {
+        console.log("Using MRT rules to determine proxy target");
+    }
 });
