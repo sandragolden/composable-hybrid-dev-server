@@ -78,8 +78,25 @@ determine which routes should be proxied to the PWA origin. Each `MRT_RULE_#` en
 the rule expression. See [createMrtRules](https://developer.salesforce.com/docs/commerce/commerce-api/references/cdn-api-process-apis?meta=createMrtRules)
 
 ```
-MRT_RULE_1='(http.host eq "localhost" and not ( http.request.uri.path matches "/on/path1/.*" or http.request.uri.path matches "/on/path2/.*" or http.request.uri.path matches ".*routeDetails=true" or http.request.uri.path eq "/path3.txt" ))'
-MRT_RULE_2='(http.host eq "localhost" and not ( http.request.uri.path matches "^/path4/.*" or http.request.uri.path matches "^.*/path5/.*/products/.*"))'
+# Direct requests for anything that doesn't look like a SFCC sandbox to pwa-kit
+MRT_RULE_1='(http.host eq "localhost" and not
+    http.request.uri.path matches "^/on/"
+    and not http.request.uri.path matches "^/s/")'
+
+# or Direct requests specifically meant for pwa-kit explicitly
+MRT_RULE_1='(http.host eq "localhost" and (
+    http.request.uri.path eq "/" or
+    http.request.uri.path matches "^/callback" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/login" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/reset-password" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/registration" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account/orders" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account/orders/(\w+)" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/account/wishlist" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/product/(\w+)" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/search" or
+    http.request.uri.path matches "^/(\w+)/(\w+)/category/(\w+)"))'
 ```
 
 Note: `http.host` **is** matched so it's recommended to use `localhost` as the host or omit the check entirely for local development as this
