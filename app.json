@@ -29,6 +29,11 @@
       "description": "Should the routes include Site ID in the mapping (ex: /RefArch/)",
       "required": true,
       "value": "true"
+    },
+    "MRT_RULE_1": {
+      "description": "A string with an MRT eCDN Rule expression (will be used in place of hardcoded routes)",
+      "required": false,
+      "value": ""
     }
   }
 }

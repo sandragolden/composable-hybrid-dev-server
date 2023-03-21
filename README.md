@@ -87,16 +87,17 @@ MRT_RULE_1='(http.host eq "localhost" and not
 MRT_RULE_1='(http.host eq "localhost" and (
     http.request.uri.path eq "/" or
     http.request.uri.path matches "^/callback" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/login" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/reset-password" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/registration" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/account" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/account/orders" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/account/orders/(\w+)" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/account/wishlist" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/product/(\w+)" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/search" or
-    http.request.uri.path matches "^/(\w+)/(\w+)/category/(\w+)"))'
+    http.request.uri.path matches "^/mobify" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/login" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/reset-password" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/registration" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/account" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/account/orders" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/account/orders/(\\w+)" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/account/wishlist" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/product/(\\w+)" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/search" or
+    http.request.uri.path matches "^/(\\w+)/([-\\w]+)/category/(\\w+)"))'
 ```
 
 Note: `http.host` **is** matched so it's recommended to use `localhost` as the host or omit the check entirely for local development as this
