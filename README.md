@@ -114,7 +114,7 @@ npm start
 Then open browser http://localhost:8001, you should have both the SFRA/SiteGenesis and PWA sites running on the same domain.
 
 ## Deploy to Heroku
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/sandragolden/composable-hybrid-dev-server)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new-app?template=https://github.com/sandragolden/composable-hybrid-dev-server)
 
 ## License
 
