@@ -10,9 +10,9 @@ const PORT = process.env.PORT || 8001
 const PROXY_ORIGIN = process.env.PROXY_ORIGIN;
 const SFCC_ORIGIN = process.env.SFCC_ORIGIN;
 const PWA_ORIGIN = process.env.PWA_ORIGIN;
-const MRT_RULES = Object.keys(process.env)
-    .filter((key) => key.startsWith('MRT_RULE_'))
-    .map((key) => process.env[key]);
+const MRT_RULES = Object.entries(process.env)
+    .filter(([key, value]) => key.startsWith('MRT_RULE_') && value)
+    .map(([_key, value]) => value);
 const PWA_ROUTES = require('./routes');
 const {evaluateRule} = require("./mrt-rule-matcher");
 
@@ -35,6 +35,7 @@ const options = {
             });
 
             if (match) {
+                console.log(`Proxying ${req.path} to ${PWA_ORIGIN}...`);
                 return PWA_ORIGIN;
             }
         } else {
@@ -47,6 +48,7 @@ const options = {
             }
         }
 
+        console.log(`Proxying ${req.path} to ${SFCC_ORIGIN}...`);
         return SFCC_ORIGIN;
     },
     selfHandleResponse: true,
