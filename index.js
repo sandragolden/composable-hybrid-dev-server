@@ -25,14 +25,13 @@ const options = {
     cookieDomainRewrite: true,
     router: (req) => {
         if (MRT_RULES.length) {
-            let match = MRT_RULES.every((rule) => {
-                return evaluateRule(rule, {
+            let match = MRT_RULES.some((rule) => evaluateRule(rule, {
                     host: req.hostname,
                     uri: req.url,
                     path: req.path,
                     cookies: req.headers.cookie || ''
-                });
-            });
+                })
+            );
 
             if (match) {
                 console.log(`Proxying ${req.path} to ${PWA_ORIGIN}...`);

@@ -109,10 +109,8 @@ function evaluateRule(ruleExpression, {host, uri, path, cookies = ""} = {}) {
 if (require.main === module) {
     const TEST_RULES = [
         `(http.host eq "dev-customer.salesforce.com" and not ( http.request.uri.path matches "/on/path1/.*" or http.request.uri.path matches "/on/path2/.*" or http.request.uri.path matches ".*routeDetails=true" or http.request.uri.path eq "/path3.txt" ))`,
-        `(http.host eq "dev-customer.salesforce.com" and not ( http.request.uri.path matches "^/path4/.*" or http.request.uri.path matches "^.*/path5/.*/products/.*"))`,
         // test alternative syntax and functions
-        `(starts_with(http.host, "dev-customer") and not ( ends_with(http.host, "example.com")) and http.host ~ ".*salesforce\.com" and http.host contains "dev")`,
-
+        `not http.host eq "dev-customer.example.com"`
     ]
     const TEST_RULES_2 = [
         // common for the proxy
@@ -120,6 +118,9 @@ if (require.main === module) {
     ]
     const TEST_RULES_3 = [
         `http.cookies contains "supersecret"`
+    ]
+    const TEST_RULES_4 = [
+        `(starts_with(http.host, "dev-customer") and not ( ends_with(http.host, "example.com")) and http.host ~ ".*salesforce\.com" and http.host contains "dev")`,
     ]
 
     const TEST_HOST = "dev-customer.salesforce.com"
@@ -129,40 +130,47 @@ if (require.main === module) {
     TEST_RULES_2.forEach(r => console.log(parseRuleExpression(r)))
     TEST_RULES_3.forEach(r => console.log(parseRuleExpression(r)))
 
-    assert.equal(TEST_RULES.every(exp => evaluateRule(exp, {
+    assert.equal(TEST_RULES.some(exp => evaluateRule(exp, {
         host: TEST_HOST,
         cookies: TEST_COOKIES,
         uri: "/path3.txt?some=thing",
         path: "/path3.txt"
     })), false)
 
-    assert.equal(TEST_RULES.every(exp => evaluateRule(exp, {
+    assert.equal(TEST_RULES.some(exp => evaluateRule(exp, {
         host: TEST_HOST,
         cookies: TEST_COOKIES,
         uri: "/foo/bar?some=thing",
         path: "/foo/bar"
     })), true)
 
-    assert.equal(TEST_RULES_2.every(exp => evaluateRule(exp, {
+    assert.equal(TEST_RULES_2.some(exp => evaluateRule(exp, {
         host: TEST_HOST,
         cookies: TEST_COOKIES,
         uri: "/mobify/proxy/foo/bar",
         path: "/mobify/proxy/foo/bar"
     })), true)
 
-    assert.equal(TEST_RULES.every(exp => evaluateRule(exp, {
+    assert.equal(TEST_RULES.some(exp => evaluateRule(exp, {
         host: TEST_HOST,
         cookies: TEST_COOKIES,
         uri: "/on/path2/something?some=thing",
         path: "/on/path2/something"
     })), false)
 
-    assert.equal(TEST_RULES_3.every(exp => evaluateRule(exp, {
+    assert.equal(TEST_RULES_3.some(exp => evaluateRule(exp, {
         host: TEST_HOST,
         cookies: TEST_COOKIES,
         uri: "/on/path2/something?some=thing",
         path: "/on/path2/something"
     })), false)
+
+    assert.equal(TEST_RULES_4.some(exp => evaluateRule(exp, {
+        host: TEST_HOST,
+        cookies: TEST_COOKIES,
+        uri: "/on/path2/something?some=thing",
+        path: "/on/path2/something"
+    })), true)
 }
 
 module.exports = {
