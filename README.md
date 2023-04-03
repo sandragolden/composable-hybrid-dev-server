@@ -60,7 +60,7 @@ PWA_ORIGIN=https://your-app-name.mobify-storefront.com
 PREPEND_LOCALE_TO_PATH=true
 PREPEND_SITEID_TO_PATH=true
 ```
-The following table describes each of the B2C Commerce specific .env file variables that are leveraged by b2c-crm-sync's build and deployment tools.
+The following table describes each of the .env file variables that are leveraged.
 | Property Name             | Description                                                                                         |
 |---------------------------|-----------------------------------------------------------------------------------------------------|
 | PORT                      | Proxy Port (ex: `8001`)                                                                             |
