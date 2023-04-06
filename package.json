@@ -12,7 +12,9 @@
   ],
   "scripts": {
     "start": "node index.js",
-    "start:dev": "nodemon index.js"
+    "start:dev": "nodemon index.js",
+    "lint": "eslint --ext .js .",
+    "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
     "dotenv": "^16.0.1",
@@ -23,6 +25,8 @@
     "react-router": "^5.2.1"
   },
   "devDependencies": {
+    "eslint": "^8.37.0",
+    "eslint-config-airbnb": "^19.0.4",
     "nodemon": "^2.0.16"
   }
 }
