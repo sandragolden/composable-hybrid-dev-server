@@ -16,7 +16,8 @@ const MRT_RULES = Object.entries(process.env)
   .filter(([key, value]) => key.startsWith('MRT_RULE_') && value)
   .map(([_key, value]) => value); // eslint-disable-line no-unused-vars
 const PWA_ROUTES = require('./routes');
-const { evaluateRule } = require('./mrt-rule-matcher');
+const { evaluateRule } = require('./utils/mrt-rule-matcher');
+const { iterate } = require('./utils/proxyHelpers');
 
 const options = {
   target: SFCC_ORIGIN,
@@ -54,21 +55,32 @@ const options = {
   selfHandleResponse: true,
   onProxyRes: (proxyRes, req, res) => {
     return responseInterceptor(async (responseBuffer) => {
-      if (!proxyRes.headers['content-type']?.includes('html')) {
-        return responseBuffer;
+      const contentType = proxyRes?.headers['content-type'];
+      if (!contentType) return responseBuffer;
+
+      let response;
+      let updatedResponse;
+
+      switch (contentType.split(';')[0]) {
+        case 'text/html':
+          response = responseBuffer.toString('utf8');
+
+          // some links are absolute URLs, replace them so they go through the proxy
+          updatedResponse = response.replace(new RegExp(`${SFCC_ORIGIN}`, 'g'), PROXY_ORIGIN);
+
+          // replace any redirects to the SFCC origin with the proxy origin (for example: URLUtils.https)
+          if (proxyRes.headers.location?.includes(SFCC_ORIGIN)) {
+            console.log(`Rewriting location header => ${proxyRes.headers.location}`);
+            res.setHeader('location', proxyRes.headers.location.replace(SFCC_ORIGIN, PROXY_ORIGIN));
+          }
+
+          return updatedResponse;
+        case 'application/json':
+          response = JSON.parse(responseBuffer.toString('utf8'));
+          return JSON.stringify(iterate(response, null));
+        default:
+          return responseBuffer;
       }
-      const response = responseBuffer.toString('utf8');
-
-      // some links are absolute URLs, replace them so they go through the proxy
-      let newRes = response.replace(new RegExp(`${SFCC_ORIGIN}`, 'g'), PROXY_ORIGIN);
-
-      // replace any redirects to the SFCC origin with the proxy origin (for example: URLUtils.https)
-      if (proxyRes.headers.location?.includes(SFCC_ORIGIN)) {
-        console.log(`Rewriting location header => ${proxyRes.headers.location}`);
-        res.setHeader('location', proxyRes.headers.location.replace(SFCC_ORIGIN, PROXY_ORIGIN));
-      }
-
-      return newRes;
     })(proxyRes, req, res);
   }
 };
