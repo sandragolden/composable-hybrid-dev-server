@@ -76,8 +76,13 @@ const options = {
 
           return updatedResponse;
         case 'application/json':
-          response = JSON.parse(responseBuffer.toString('utf8'));
-          return JSON.stringify(iterate(response, null));
+          try {
+            response = JSON.parse(responseBuffer.toString('utf8'));
+            return JSON.stringify(iterate(response, null));
+          } catch (e) {
+            console.error(`error parsing JSON input: ${e}`);
+            return responseBuffer;
+          }
         default:
           return responseBuffer;
       }
