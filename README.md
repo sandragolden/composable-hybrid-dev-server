@@ -16,8 +16,7 @@ It serves two sites under the same domain locally and enables developers to test
 
 ### Installation
 ```sh
-git clone git@github.com:SalesforceCommerceCloud/composable-hybrid-dev-server.git
-cd composable-hybrid-dev-server
+git clone git@github.com:SalesforceCommerceCloud/composable-hybrid-dev-server.git && cd composable-hybrid-dev-server
 npm install
 ```
 
@@ -115,6 +114,13 @@ Then open browser http://localhost:8001, you should have both the SFRA/SiteGenes
 
 ## Deploy to Heroku
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new-app?template=https://github.com/sandragolden/composable-hybrid-dev-server)
+
+> :zap: When deploying to Heroku, don't forget to add your Heroku App URL as a `redirectUri` on your SLAS Client:
+> ```json 
+> "redirectUri": [
+>    "https://your-app-name.herokuapp.com/callback"
+> ]
+> ```
 
 ## License
 
