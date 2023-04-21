@@ -1,32 +1,35 @@
 {
-  "name": "composable-hybrid-dev-server",
-  "version": "0.1.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SalesforceCommerceCloud/composable-hybrid-dev-server.git"
-  },
-  "contributors": [
-    "Sandra Golden <sgolden@salesforce.com>",
-    "Charles Lavery <clavery@salesforce.com>"
-  ],
-  "scripts": {
-    "start": "node index.js",
-    "start:dev": "nodemon index.js",
-    "lint": "eslint --ext .js .",
-    "lint:fix": "npm run lint -- --fix"
-  },
-  "dependencies": {
-    "dotenv": "^16.0.1",
-    "dotenv-expand": "^8.0.3",
-    "express": "^4.17.2",
-    "http-proxy-middleware": "^2.0.2",
-    "react": "^17.0.2",
-    "react-router": "^5.2.1"
-  },
-  "devDependencies": {
-    "eslint": "^8.37.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "nodemon": "^2.0.16"
-  }
+    "name": "composable-hybrid-dev-server",
+    "version": "0.1.0",
+    "engines": {
+      "node": ">=18"
+    },
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SalesforceCommerceCloud/composable-hybrid-dev-server.git"
+    },
+    "contributors": [
+        "Sandra Golden <sgolden@salesforce.com>",
+        "Charles Lavery <clavery@salesforce.com>"
+    ],
+    "scripts": {
+        "start": "node index.js",
+        "start:dev": "nodemon index.js",
+        "lint": "eslint --ext .js .",
+        "lint:fix": "npm run lint -- --fix"
+    },
+    "dependencies": {
+        "dotenv": "^16.0.1",
+        "dotenv-expand": "^8.0.3",
+        "express": "^4.17.2",
+        "http-proxy-middleware": "^2.0.2",
+        "react": "^17.0.2",
+        "react-router": "^5.2.1"
+    },
+    "devDependencies": {
+        "eslint": "^8.37.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "nodemon": "^2.0.16"
+    }
 }
