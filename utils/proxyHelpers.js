@@ -1,8 +1,5 @@
 'use strict';
 
-const SFCC_ORIGIN = process.env.SFCC_ORIGIN;
-const PROXY_ORIGIN = process.env.PROXY_ORIGIN;
-
 const isString = (element) => {
   if (!element) return false;
   return typeof element === 'string';
@@ -28,15 +25,17 @@ const forEachIn = (iterable, functionRef) => {
   });
 };
 
-const iterate = (object, parent) => {
+const iterate = (object, parent, vars = {}) => {
   if (!isIterable(object)) return object;
+  const { SFCC_ORIGIN, PROXY_ORIGIN } = vars;
   forEachIn(object, (key, value) => {
     // replace any urls to the SFCC origin with the proxy origin
     if (isString(value) && isString(key) && KEYS_TO_REWRITE.indexOf(String(key).toLowerCase()) > -1) {
       console.log(`Rewriting JSON value => ${value} for key: ${key}`);
       object[key] = value.replace(SFCC_ORIGIN, PROXY_ORIGIN);
+      console.log(`new value => ${object[key]}`);
     }
-    iterate(value, parent);
+    iterate(value, parent, vars);
   });
   return object;
 };

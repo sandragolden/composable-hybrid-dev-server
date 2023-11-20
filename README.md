@@ -58,6 +58,9 @@ SFCC_ORIGIN=https://abcd-001.dx.commercecloud.salesforce.com
 PWA_ORIGIN=https://your-app-name.mobify-storefront.com
 PREPEND_LOCALE_TO_PATH=true
 PREPEND_SITEID_TO_PATH=true
+
+# OPTIONAL: If you want to use the same proxy for multiple environments. Value should be "hostname" or "cookie"
+# MULTI_ENV_SOURCE=hostname
 ```
 The following table describes each of the .env file variables that are leveraged.
 | Property Name             | Description                                                                                         |
@@ -68,9 +71,10 @@ The following table describes each of the .env file variables that are leveraged
 | PWA_ORIGIN                | The PWA instance URL (ex: `http://localhost:3000` or `https://your-app-name.mobify-storefront.com`) |
 | PREPEND_LOCALE_TO_PATH    | Should the routes include locale in the mapping (ex: `/en_US/`)                                     |
 | PREPEND_SITEID_TO_PATH    | Should the routes include Site ID in the mapping (ex: `/RefArch/`)                                  |
-| MRT_RULE_#                | Numbered rules that map to PWA using MRT rules (see below)                                          |
+| MULTI_ENV_SOURCE          | Optional: If you want to use the same proxy for multiple environments. Value should be `hostname` or `cookie` (see below) |
+| MRT_RULE_#                | Optional: Numbered rules that map to PWA using MRT rules (see below)                                          |
 
-#### (optional) MRT Rules
+### (optional) MRT Rules
 
 If at least 1 `MRT_RULE_#` env variable is provided these will be used instead of the hardcoded routes in `routes.js` to
 determine which routes should be proxied to the PWA origin. Each `MRT_RULE_#` environment var should be in the form of
@@ -99,8 +103,34 @@ MRT_RULE_1='(http.host eq "localhost" and (
     http.request.uri.path matches "^/(\\w+)/([-\\w]+)/category/(\\w+)"))'
 ```
 
-Note: `http.host` **is** matched so it's recommended to use `localhost` as the host or omit the check entirely for local development as this
-will match the proxy origin (localhost in dev, etc)
+Note: `http.host` **is** matched, so it's recommended to use `localhost` as the host or omit the check entirely for local development as this will match the proxy origin (localhost in dev, etc.)
+
+### (optional) Multi-Environment Support
+If you want to use the same proxy for multiple SFCC environments, you can set the `MULTI_ENV_SOURCE` environment variable to [`hostname`](#multi-environment-support--hostname) or [`cookie`](#multi-environment-support--cookie). This will allow you to use the same proxy for multiple environments.
+
+The proxy will use the hostname or cookie value to dynamically fetch the target from environment variables. See examples below.
+
+#### Multi-Environment Support : Hostname
+```text
+MULTI_ENV_SOURCE=hostname
+```
+Configure a CNAME for each environment you want to proxy to. The first part of the hostname will be used to determine which environment to proxy to. For example, if you have the following CNAMEs:
+
+| CNAME                     | KEY           | ENV VARIABLES                                                                                                                                                                                                                                                                                       |
+|---------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sfra.example.com`        | `SFRA`        | `PROXY_ORIGIN_SFRA`=`https://sfra.example.com`<br/>`PWA_ORIGIN_SFRA`=`https://hybrid-sfra.mobify-storefront.com`<br/>`SFCC_ORIGIN_SFRA`=`https://abcd-001.dx.commercecloud.salesforce.com`<br/>`SFRA_MRT_RULE_1`=rule1<br/>`SFRA_MRT_RULE_2`=rule2                                                  |
+| `sitegenesis.example.com` | `SITEGENESIS` | `PROXY_ORIGIN_SITEGENESIS`=`https://sitegenesis.example.com`<br/>`PWA_ORIGIN_SITEGENESIS`=`https://hybrid-sitegenesis.mobify-storefront.com`<br/>`SFCC_ORIGIN_SITEGENESIS`=`https://abcd-002.dx.commercecloud.salesforce.com`<br/>`SITEGENESIS_MRT_RULE_1`=rule1<br/>`SITEGENESIS_MRT_RULE_2`=rule2 |                                         |
+
+#### Multi-Environment Support : Cookie
+```text
+MULTI_ENV_SOURCE=cookie
+```
+In the browser, add a cookie named `cc-env`. The cookie value will be used to determine which environment to proxy to. When using the cookie option, the default `PROXY_ORIGIN` is assumed.  For example, if you have the following `cc-env` value:
+
+| COOKIE VALUE | KEY       | ENV VARIABLES                                                                                                                                                                                                   |
+|--------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ABCD001`    | `ABCD001` | `PWA_ORIGIN_ABCD001`=`https://example-abcd001.mobify-storefront.com`<br/>`SFCC_ORIGIN_ABCD001`=`https://abcd-001.dx.commercecloud.salesforce.com`<br/>`ABCD001_MRT_RULE_1`=rule1<br/>`ABCD001_MRT_RULE_2`=rule2 |
+| `ABCD002`    | `ABCD002` | `PWA_ORIGIN_ABCD002`=`https://example-abcd002.mobify-storefront.com`<br/>`SFCC_ORIGIN_ABCD002`=`https://abcd-002.dx.commercecloud.salesforce.com`<br/>`ABCD002_MRT_RULE_1`=rule1<br/>`ABCD002_MRT_RULE_2`=rule2 |                                                               
 
 ### Run the server
 You need to make sure you have the PWA local development server running on another terminal tab.
